@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>404 - Page Not Found</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css?family=Press+Start+2P&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Press Start 2P';
+        }
+        body {
+            display: flex;
+            justify-content: space-evenly;
+            align-items: center;
+            height: 100vh;
+            padding: 2em;
+            flex-wrap: wrap;
+            background: #fff;
+        }
+        div {
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            flex-direction: column;
+        }
+        h1 {
+            font-size: 6em;
+        }
+        div h4 {
+            max-width: 400px;
+        }
+        canvas {
+            min-width: 300px;
+            min-height: 300px;
+            width: 400px;
+            height: 400px;
+            position: relative;
+            background: #0099ff;
+        }
+
+        @media (max-width: 400px) {
+            canvas {
+                display: none;
+            }
+        }
+
+        canvas::after {
+            content: "You Win!";
+            font-size: 2em;
+            color: #fff;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+    </style>
+</head>
+<body>
+    <div>
+        <h1>404</h1>
+        <h4>Whoops! Looks like this page doesn't exist.</h4>
+    </div>
+
+    <canvas></canvas>
+
+    <script>
+        const { log } = console;
+        const canvas = document.querySelector("canvas");
+        const ctx = canvas.getContext("2d");
+        const maze = [
+            [1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+            [1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1],
+            [1, 0, 0, 0, 1, 1, 0, 1, 1, 1, 0, 0, 0, 0, 1, 0, 1, 0, 0, 1],
+            [1, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1],
+            [1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1],
+            [1, 1, 0, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1],
+            [1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1],
+            [1, 1, 1, 0, 1, 1, 1, 0, 1, 0, 0, 0, 1, 0, 1, 1, 0, 0, 0, 1],
+            [1, 0, 0, 0, 1, 1, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 1, 0, 1],
+            [1, 1, 1, 0, 1, 0, 0, 1, 1, 0, 0, 0, 1, 1, 1, 0, 1, 1, 0, 1],
+            [1, 0, 1, 0, 1, 0, 1, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 1],
+            [1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 1, 0, 1, 1, 1, 1, 1, 0, 1],
+            [1, 0, 1, 0, 0, 0, 1, 0, 1, 1, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1],
+            [1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1],
+            [1, 0, 1, 0, 0, 0, 1, 1, 0, 0, 1, 0, 0, 1, 1, 1, 0, 0, 0, 1],
+            [1, 0, 1, 0, 1, 0, 1, 1, 1, 0, 1, 1, 0, 0, 1, 1, 1, 1, 0, 1],
+            [1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 1],
+            [1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 0, 0, 1],
+            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1],
+            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1]
+        ];
+
+
+        class Player {
+            constructor () {
+                this.x = canvas.width/maze[0].length;
+                this.y = 0;
+                this.w = canvas.width/maze[0].length;
+                this.h = canvas.height/maze.length;
+                this.currMapIndexX = 1;
+                this.currMapIndexY = 0;
+            }
+
+            render() {
+                ctx.fillStyle = "#00f9dc";
+                ctx.fillRect(this.x, this.y, this.w, this.h);
+                ctx.fill();
+            }
+
+            wins() {
+                return (this.currMapIndexX == 18 && this.currMapIndexY == 19);
+            }
+
+            move(dirX, dirY) { 
+                if (dirX == 1) {
+                    if (maze[this.currMapIndexY][this.currMapIndexX+1] == 0) {
+                        this.x += this.w;
+                        this.currMapIndexX++;
+                    }
+                } else if (dirX == -1) {
+                    if (maze[this.currMapIndexY][this.currMapIndexX-1] == 0) {
+                        this.x += -this.w;
+                        this.currMapIndexX--;
+                    }
+                }
+
+                if (dirY == 1) {
+                    if (maze[this.currMapIndexY+1][this.currMapIndexX] == 0) {
+                        this.y += this.h;
+                        this.currMapIndexY++;
+                    }
+                } else if (dirY == -1) {
+                    if (maze[this.currMapIndexY-1][this.currMapIndexX] == 0) {
+                        this.y += -this.h;
+                        this.currMapIndexY--;
+                    }
+                }
+            }
+        }
+
+
+
+        let player;
+
+        function init() {
+
+            player = new Player();
+
+            window.addEventListener("keydown", e => {
+                if (e.keyCode == 40) {
+                    player.move(0, 1);
+                } else if (e.keyCode == 39) {
+                    player.move(1, 0);
+                } else if (e.keyCode == 38) {
+                    player.move(0, -1);
+                } else if (e.keyCode == 37) {
+                    player.move(-1, 0);
+                }
+            });
+
+        }
+
+        function loop() {
+            ctx.fillStyle = "rgba(0, 160, 200, 0.1)";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            for (let i = 0; i < maze.length; i++) {
+                for (let j = 0; j < maze[i].length; j++) {
+                    if (maze[i][j] === 1) {
+                        ctx.fillStyle = "#0069ad";
+                        ctx.fillRect(
+                            j*canvas.width/maze[i].length, 
+                            i*canvas.height/maze.length, 
+                            canvas.width/maze[i].length, 
+                            canvas.height/maze.length
+                        );
+                        ctx.fill();
+                    }
+                }
+            }
+
+            player.render();
+
+            if (player.wins()) {
+                const winImg = new Image();
+                winImg.src = "https://t3.ftcdn.net/jpg/03/27/56/10/360_F_327561023_t1N1tinKdkjPhAMGBIFx8FUyWy5JMrW5.jpg";
+                ctx.drawImage(winImg, canvas.width/2-150, canvas.height/2-25, 300, 50);
+            }
+
+            requestAnimationFrame(loop);
+        }
+
+
+        init();
+        loop();
+    </script>
+</body>
+</html>
