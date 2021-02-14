@@ -149,29 +149,7 @@ class App {
         });
 
 
-        window.addEventListener("scroll", () => {
-            if (window.scrollY > 100) {
-                this.findEl("nav").style.boxShadow = "0 4px 12px #00000030";
-            } else {
-                this.findEl("nav").style.boxShadow = "none";
-            }
-        });
-
-        let lastScrollY = 0;
-
-        setInterval(() => {
-            lastScrollY = window.scrollY;
-
-            setTimeout(() => {
-                if (window.scrollY < lastScrollY) {
-                    this.findEl("nav").style.position = "fixed";
-                } else if (window.scrollY == lastScrollY) {
-
-                } else {
-                    this.findEl("nav").style.position = "absolute";
-                }
-            }, 25);
-        }, 50);
+    
     }
     
     RenderBanner() {
