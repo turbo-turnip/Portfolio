@@ -148,8 +148,16 @@ class App {
             }
         });
 
-
-    
+        window.addEventListener("scroll", (e) => {
+            const nav = this.findEl("nav");
+            let scrollY = window.scrollY || this.scrollY;
+            
+            if (scrollY > 100) {
+                nav.style.height = "62px";
+                nav.style.boxShadow = "0 5px 12px #00000026";
+            }
+        });
+        
     }
     
     RenderBanner() {
@@ -206,7 +214,7 @@ class App {
     }
 
     RenderAbout() {
-        this.aboutUs = `<span>Hi, I'm Atticus!</span> I'm a programmer and I specialize in making web apps with Java, and making websites with HTML, CSS, and JavaScript. I bring creativeness into my projects and focus on ideas that simplify tasks. I mostly work on websites and creating awesome apps for android! I like website design, learning new things, and kittens! 😺`;
+        this.aboutUs = `<span>Hi, I'm Atticus!</span> I'm a programmer and I specialize in making web apps with Java, and making websites with HTML, CSS, and JavaScript. I bring creativeness into my projects and focus on ideas that simplify tasks. I mostly work on websites and creating awesome apps for android! I like website design, learning new things, and kittens! ðŸ˜º`;
 
         this.RenderHTML(`
             <section class="about" id="about"> 
