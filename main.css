@@ -50,8 +50,9 @@ nav {
     justify-content: space-between;
     align-items: center;
     padding: 0 1em;
-    position: absolute;
-    z-index: 100;
+    position: fixed;
+    top: 0;
+    z-index: 100 !important;
 }
 nav .logo {
     width: 60px;
